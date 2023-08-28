@@ -113,9 +113,12 @@ sudo java -jar springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar
     <p th:text="${message}"></p>
     <br>
     <ul>
+        
         <li th:each="fileName : ${fileList}">
             <span th:text="${fileName}"></span>
-            <a th:href="@{/delete/{fileName}(fileName=${fileName})}" onclick="return confirm('Are you sure you want to delete this file?')">Delete</a>
+            <th:block th:unless="${fileName == 'springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar'}">
+                <a th:href="@{/delete/{fileName}(fileName=${fileName})}" onclick="return confirm('Are you sure you want to delete this file?')">Delete</a>
+            </th:block>        
         </li>
     </ul>
 </body>
