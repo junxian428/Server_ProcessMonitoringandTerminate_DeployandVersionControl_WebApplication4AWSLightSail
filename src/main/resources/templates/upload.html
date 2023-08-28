@@ -11,7 +11,33 @@
 </head>
 <body>
     
+<h1><u>DevOps (FE+BE) Fast Deploy Application</u></h1><p>written by Weng Yin</p> 
+<br>
+<p>instruction here: </p>
+<p>For your Information: </p>
+<p>For frontend application, written in VueJS</p>
+<p>To Deploy VueJS apply, just run the command npm run build. Then all production code will be generated in the dist folder.
+    Then you upload your code into GitLab / GitHub. Then, you ssh login the server and run the git clone the repository
+    and run cp -a ~/XXX/. ~/var/www/html
+    where the index.html should be located in the html. Then you visit the server port 80 your frontend should be up.
+</p>
+<br>
 
+<p>Backend application written in Java Spring</p>
+<p>Upload  your code into GitHub or Gitlab. Then, ssh login your server to git clone. Then open project, run </p>
+<p>
+    sudo mvn clean install
+
+cd target
+
+sudo java -jar springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar
+
+
+</p>
+<p>Example: nohup java -jar bmi-1.0.jar</p>
+<p>After running this, this will be running in PID background. In order to stop this, you need to kill the process</p>
+<p>Here is the reason why this "DevOps (FE+BE) Fast Deploy Application" is created </p>
+<br>
 <h1>All Process Information</h1>
 <pre th:text="${processInfo}"></pre>
 <br>
