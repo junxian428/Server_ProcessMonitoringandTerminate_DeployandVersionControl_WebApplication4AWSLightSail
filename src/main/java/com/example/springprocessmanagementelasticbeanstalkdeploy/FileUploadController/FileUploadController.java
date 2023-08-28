@@ -2,7 +2,10 @@ package com.example.springprocessmanagementelasticbeanstalkdeploy.FileUploadCont
 
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,9 +34,45 @@ public class FileUploadController {
         List<String> highlightedLines = new ArrayList<>();
         List<String> highlightedLines_NODEJS = new ArrayList<>();
         //sudo service mysql status
+        // Read Green and Blue envionrment
+        //
+         // Specify the file path
+        String filePath = "Green.txt";
+        String filePath_2 = "Blue.txt";
+        String greenEnvironment= "";
+        String blueEnvironment= "";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                
+            }
+            greenEnvironment = line;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
+        //
 
 
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath_2))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                
+            }
+            blueEnvironment = line;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
 
+        //
+
+        model.addAttribute("greenEnvironment", greenEnvironment);
+        model.addAttribute("blueEnvironment", blueEnvironment);
         model.addAttribute("fileList", fileList);
 
 
@@ -357,6 +396,49 @@ public class FileUploadController {
             return "An error occurred while retrieving database status.";
         }
         //
+
+
+            // Specify the file path
+        String filePath = "Green.txt";
+        String filePath_2 = "Blue.txt";
+        String greenEnvironment= "";
+        String blueEnvironment= "";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                
+            }
+            greenEnvironment = line;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
+        //
+
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath_2))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                
+            }
+            blueEnvironment = line;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
+
+        //
+
+        model.addAttribute("greenEnvironment", greenEnvironment);
+        model.addAttribute("blueEnvironment", blueEnvironment);
+
+
+
+        //
          //
         model.addAttribute("processInfo", processOutput.toString());
         model.addAttribute("highlightedLines", highlightedLines);
@@ -410,5 +492,445 @@ public class FileUploadController {
             //fileList.remove(fileName);
         }
         return "redirect:/";
+    }
+
+
+
+
+
+
+    @PostMapping("/deployGreen")
+    public String uploadGreenFile(@RequestParam("file") MultipartFile file, Model model) {
+        if (!file.isEmpty()) {
+            try {
+                // Get the current working directory
+                String currentWorkingDir = System.getProperty("user.dir");
+                
+                // Create a Path for the target file using the current working directory
+                Path targetPath = Paths.get(currentWorkingDir + "/" + file.getOriginalFilename());
+                    // Delete the existing file if it exists
+                if (Files.exists(targetPath)) {
+                    Files.delete(targetPath);
+                }
+                
+                // Save the file to the current working directory
+                Files.write(targetPath, file.getBytes());
+                            // Write Green or Blue Environment
+                    // Specify the file path
+                    String filePath = "Green.txt";
+
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                        writer.write(currentWorkingDir + "/" + file.getOriginalFilename());
+                        System.out.println("Content has been written to the file.");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.out.println("An error occurred while writing to the file.");
+                    }
+
+                //
+                
+                model.addAttribute("message", "File uploaded successfully!");
+            } catch (IOException e) {
+                e.printStackTrace();
+                model.addAttribute("message", "Error uploading the file.");
+            }
+        } else {
+            model.addAttribute("message", "Please select a file to upload.");
+        }
+        
+        // Retrieve and display the list of files in the current directory
+        List<String> fileList = listFilesInCurrentDirectory();
+        model.addAttribute("fileList", fileList);
+        List<String> highlightedLines = new ArrayList<>();
+        List<String> highlightedLines_NODEJS = new ArrayList<>();
+
+        // Get process
+        ProcessBuilder processBuilder = new ProcessBuilder("ps", "aux");
+        StringBuilder processOutput = new StringBuilder();
+
+        try {
+            Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("java -jar")) {
+                    highlightedLines.add(line);
+                } 
+                if (line.contains("node")) {
+                     highlightedLines_NODEJS.add(line);
+                }            
+                processOutput.append(line).append("\n");
+            }
+
+            int exitCode = process.waitFor();
+            processOutput.append("\nProcess exited with code: ").append(exitCode);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            processOutput.append("Error occurred: ").append(e.getMessage());
+        }
+        // Apache Status 
+
+        /*
+         * 
+         * 
+         * 
+         */
+        ProcessBuilder processBuilder_2 = new ProcessBuilder("service", "apache2", "status");
+        String apache2_status = "";
+
+         try {
+            Process process_2 = processBuilder_2.start();
+            int exitCode = process_2.waitFor();
+
+            if (exitCode == 0) {
+                apache2_status = readOutput(process_2.getInputStream());
+            } else {
+                apache2_status = "Apache2 service is not running or encountered an error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+        /*
+         * 
+         * 
+         * 
+         */
+
+        ProcessBuilder processBuilder_3 = new ProcessBuilder("systemctl", "status", "nginx");
+        String nginx_status = "";
+
+         try {
+            Process process_3 = processBuilder_3.start();
+            int exitCode = process_3.waitFor();
+
+            if (exitCode == 0) {
+                nginx_status = readOutput(process_3.getInputStream());
+            } else {
+                nginx_status = "Nginx service is not running or encountered an error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+
+        //
+        /*
+         * 
+         * 
+         * 
+         */
+
+
+        ProcessBuilder processBuilder_4 = new ProcessBuilder("sudo", "nmap", "localhost");
+        String port_status = "";
+
+         try {
+            Process process_4 = processBuilder_4.start();
+            int exitCode = process_4.waitFor();
+
+            if (exitCode == 0) {
+                port_status = readOutput(process_4.getInputStream());
+            } else {
+                port_status = "Port scan error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+  //sudo service mysql status
+
+        ProcessBuilder processBuilder_5 = new ProcessBuilder("sudo", "service", "mysql", "status");
+        String database_status = "";
+
+         try {
+            Process process_5 = processBuilder_5.start();
+            int exitCode = process_5.waitFor();
+
+            if (exitCode == 0) {
+                database_status = readOutput(process_5.getInputStream());
+            } else {
+                  database_status = "Database status error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving database status.";
+        }
+        //
+
+            // Specify the file path
+        String filePath = "Green.txt";
+        String filePath_2 = "Blue.txt";
+        String greenEnvironment= "";
+        String blueEnvironment= "";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                
+            }
+            greenEnvironment = line;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
+        //
+
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath_2))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                
+            }
+            blueEnvironment = line;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
+
+        //
+
+        model.addAttribute("greenEnvironment", greenEnvironment);
+        model.addAttribute("blueEnvironment", blueEnvironment);
+
+
+
+         //
+        model.addAttribute("processInfo", processOutput.toString());
+        model.addAttribute("highlightedLines", highlightedLines);
+        model.addAttribute("highlightedLines_NODEJS",    highlightedLines_NODEJS);
+        model.addAttribute("apacheStatus",    apache2_status);
+        model.addAttribute("nginxStatus",    nginx_status);
+        model.addAttribute("portStatus",    port_status);
+        model.addAttribute("databaseStatus",    database_status);
+
+
+
+
+        return "upload";
+    }
+
+
+
+
+
+
+    @PostMapping("/deployBlue")
+    public String uploadBlueFile(@RequestParam("file") MultipartFile file, Model model) {
+        if (!file.isEmpty()) {
+            try {
+                // Get the current working directory
+                String currentWorkingDir = System.getProperty("user.dir");
+                
+                // Create a Path for the target file using the current working directory
+                Path targetPath = Paths.get(currentWorkingDir + "/" + file.getOriginalFilename());
+                    // Delete the existing file if it exists
+                if (Files.exists(targetPath)) {
+                    Files.delete(targetPath);
+                }
+                
+                // Save the file to the current working directory
+                Files.write(targetPath, file.getBytes());
+                            // Write Green or Blue Environment
+                    // Specify the file path
+                    String filePath = "Blue.txt";
+
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                        writer.write(currentWorkingDir + "/" + file.getOriginalFilename());
+                        System.out.println("Content has been written to the file.");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.out.println("An error occurred while writing to the file.");
+                    }
+
+                //
+                
+                model.addAttribute("message", "File uploaded successfully!");
+            } catch (IOException e) {
+                e.printStackTrace();
+                model.addAttribute("message", "Error uploading the file.");
+            }
+        } else {
+            model.addAttribute("message", "Please select a file to upload.");
+        }
+        
+        // Retrieve and display the list of files in the current directory
+        List<String> fileList = listFilesInCurrentDirectory();
+        model.addAttribute("fileList", fileList);
+        List<String> highlightedLines = new ArrayList<>();
+        List<String> highlightedLines_NODEJS = new ArrayList<>();
+
+        // Get process
+        ProcessBuilder processBuilder = new ProcessBuilder("ps", "aux");
+        StringBuilder processOutput = new StringBuilder();
+
+        try {
+            Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("java -jar")) {
+                    highlightedLines.add(line);
+                } 
+                if (line.contains("node")) {
+                     highlightedLines_NODEJS.add(line);
+                }            
+                processOutput.append(line).append("\n");
+            }
+
+            int exitCode = process.waitFor();
+            processOutput.append("\nProcess exited with code: ").append(exitCode);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            processOutput.append("Error occurred: ").append(e.getMessage());
+        }
+        // Apache Status 
+
+        /*
+         * 
+         * 
+         * 
+         */
+        ProcessBuilder processBuilder_2 = new ProcessBuilder("service", "apache2", "status");
+        String apache2_status = "";
+
+         try {
+            Process process_2 = processBuilder_2.start();
+            int exitCode = process_2.waitFor();
+
+            if (exitCode == 0) {
+                apache2_status = readOutput(process_2.getInputStream());
+            } else {
+                apache2_status = "Apache2 service is not running or encountered an error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+        /*
+         * 
+         * 
+         * 
+         */
+
+        ProcessBuilder processBuilder_3 = new ProcessBuilder("systemctl", "status", "nginx");
+        String nginx_status = "";
+
+         try {
+            Process process_3 = processBuilder_3.start();
+            int exitCode = process_3.waitFor();
+
+            if (exitCode == 0) {
+                nginx_status = readOutput(process_3.getInputStream());
+            } else {
+                nginx_status = "Nginx service is not running or encountered an error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+
+        //
+        /*
+         * 
+         * 
+         * 
+         */
+
+
+        ProcessBuilder processBuilder_4 = new ProcessBuilder("sudo", "nmap", "localhost");
+        String port_status = "";
+
+         try {
+            Process process_4 = processBuilder_4.start();
+            int exitCode = process_4.waitFor();
+
+            if (exitCode == 0) {
+                port_status = readOutput(process_4.getInputStream());
+            } else {
+                port_status = "Port scan error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+  //sudo service mysql status
+
+        ProcessBuilder processBuilder_5 = new ProcessBuilder("sudo", "service", "mysql", "status");
+        String database_status = "";
+
+         try {
+            Process process_5 = processBuilder_5.start();
+            int exitCode = process_5.waitFor();
+
+            if (exitCode == 0) {
+                database_status = readOutput(process_5.getInputStream());
+            } else {
+                  database_status = "Database status error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving database status.";
+        }
+        //
+
+            // Specify the file path
+        String filePath = "Green.txt";
+        String filePath_2 = "Blue.txt";
+        String greenEnvironment= "";
+        String blueEnvironment= "";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                
+            }
+            greenEnvironment = line;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
+        //
+
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath_2))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                
+            }
+            blueEnvironment = line;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
+
+        //
+
+        model.addAttribute("greenEnvironment", greenEnvironment);
+        model.addAttribute("blueEnvironment", blueEnvironment);
+
+
+
+         //
+        model.addAttribute("processInfo", processOutput.toString());
+        model.addAttribute("highlightedLines", highlightedLines);
+        model.addAttribute("highlightedLines_NODEJS",    highlightedLines_NODEJS);
+        model.addAttribute("apacheStatus",    apache2_status);
+        model.addAttribute("nginxStatus",    nginx_status);
+        model.addAttribute("portStatus",    port_status);
+        model.addAttribute("databaseStatus",    database_status);
+
+
+
+
+        return "upload";
     }
 }
