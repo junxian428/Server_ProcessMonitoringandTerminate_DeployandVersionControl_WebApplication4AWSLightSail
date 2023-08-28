@@ -12,6 +12,12 @@
 <body>
     
 <h1><u>DevOps (FE+BE) Fast Deploy Application</u></h1><p>written by Weng Yin</p> 
+
+
+<a href="/database">Database</a>
+
+
+
 <br>
 <p>instruction here: </p>
 <p>For your Information: </p>
@@ -96,7 +102,7 @@ sudo java -jar springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar
             Blue Environment
         </th>
         <th style="border: 1px solid black;">
-            <pre th:text="${blueEnvironment}"></pre>
+            <pre th:text="${blue_Environment}"></pre>
         </th>
     </tr>
     <tr style="border: 1px solid black;">
@@ -105,8 +111,7 @@ sudo java -jar springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar
             Green Environment
         </th>
         <th style="border: 1px solid black;">
-            <pre th:text="${greenEnvironment}"></pre>
-
+            <pre th:text="${green_Environment}"></pre>
         </th>
     </tr>
 </table>

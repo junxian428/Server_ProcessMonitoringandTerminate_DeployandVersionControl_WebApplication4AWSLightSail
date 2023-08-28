@@ -41,7 +41,14 @@ public class FileUploadController {
         String filePath_2 = "Blue.txt";
         String greenEnvironment= "";
         String blueEnvironment= "";
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+          // Get the current working directory
+        String currentWorkingDir = System.getProperty("user.dir");
+                
+                // Create a Path for the target file using the current working directory
+         Path targetPath = Paths.get(currentWorkingDir + "/" + filePath);
+         Path targetPath_2 = Paths.get(currentWorkingDir + "/" + filePath_2);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath.toString()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -56,7 +63,7 @@ public class FileUploadController {
         //
 
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath_2))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath_2.toString()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -221,6 +228,8 @@ public class FileUploadController {
     public String showInputForm() {
         return "redirect:/";
     }
+
+ 
 
 
     @PostMapping("/process-input")
@@ -397,13 +406,22 @@ public class FileUploadController {
         }
         //
 
-
-            // Specify the file path
+        //sudo service mysql status
+        // Read Green and Blue envionrment
+        //
+         // Specify the file path
         String filePath = "Green.txt";
         String filePath_2 = "Blue.txt";
         String greenEnvironment= "";
         String blueEnvironment= "";
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+          // Get the current working directory
+        String currentWorkingDir = System.getProperty("user.dir");
+                
+                // Create a Path for the target file using the current working directory
+         Path targetPath = Paths.get(currentWorkingDir + "/" + filePath);
+         Path targetPath_2 = Paths.get(currentWorkingDir + "/" + filePath_2);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath.toString()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -418,7 +436,7 @@ public class FileUploadController {
         //
 
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath_2))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath_2.toString()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -435,7 +453,6 @@ public class FileUploadController {
 
         model.addAttribute("greenEnvironment", greenEnvironment);
         model.addAttribute("blueEnvironment", blueEnvironment);
-
 
 
         //
@@ -658,13 +675,22 @@ public class FileUploadController {
             return "An error occurred while retrieving database status.";
         }
         //
-
-            // Specify the file path
+        //sudo service mysql status
+        // Read Green and Blue envionrment
+        //
+         // Specify the file path
         String filePath = "Green.txt";
         String filePath_2 = "Blue.txt";
         String greenEnvironment= "";
         String blueEnvironment= "";
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+          // Get the current working directory
+        String currentWorkingDir = System.getProperty("user.dir");
+                
+                // Create a Path for the target file using the current working directory
+         Path targetPath = Paths.get(currentWorkingDir + "/" + filePath);
+         Path targetPath_2 = Paths.get(currentWorkingDir + "/" + filePath_2);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath.toString()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -679,7 +705,7 @@ public class FileUploadController {
         //
 
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath_2))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath_2.toString()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -694,8 +720,8 @@ public class FileUploadController {
 
         //
 
-        model.addAttribute("greenEnvironment", greenEnvironment);
-        model.addAttribute("blueEnvironment", blueEnvironment);
+        model.addAttribute("green_Environment", greenEnvironment);
+        model.addAttribute("blue_Environment", blueEnvironment);
 
 
 
@@ -879,12 +905,22 @@ public class FileUploadController {
         }
         //
 
-            // Specify the file path
+                 //sudo service mysql status
+        // Read Green and Blue envionrment
+        //
+         // Specify the file path
         String filePath = "Green.txt";
         String filePath_2 = "Blue.txt";
         String greenEnvironment= "";
         String blueEnvironment= "";
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+          // Get the current working directory
+        String currentWorkingDir = System.getProperty("user.dir");
+                
+                // Create a Path for the target file using the current working directory
+         Path targetPath = Paths.get(currentWorkingDir + "/" + filePath);
+         Path targetPath_2 = Paths.get(currentWorkingDir + "/" + filePath_2);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath.toString()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -899,7 +935,7 @@ public class FileUploadController {
         //
 
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath_2))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath_2.toString()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -914,9 +950,8 @@ public class FileUploadController {
 
         //
 
-        model.addAttribute("greenEnvironment", greenEnvironment);
-        model.addAttribute("blueEnvironment", blueEnvironment);
-
+        model.addAttribute("green_Environment", greenEnvironment);
+        model.addAttribute("blue_Environment", blueEnvironment);
 
 
          //
