@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>>Elastic BeanStalk & Version Control</title>
+    <style>
+            .highlight {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    
+
+<h1>All Process Information</h1>
+<pre th:text="${processInfo}"></pre>
+<br>
+<h1>Process running application</h1>
+<h3><u>Java Spring Application</u></h3>
+<pre th:each="line : ${highlightedLines}" th:classappend="${line.contains('java -jar') ? 'highlight' : ''}">
+    <span th:text="${line}" ></span>    
+</pre>
+<br>
+<h3><u>NodeJS Application</u></h3>
+<br>
+
+
+<hr>
+
+<h1>Elastic BeanStalk & Version Control</h1>
+<p>Fast Deloyment</p>
+<form th:action="@{/upload}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <button type="submit">Upload</button>
+</form>
+<p th:text="${message}"></p>
+
+<hr>
+
+
+    <h2>Files in Current Directory</h2>
+    <ul>
+        <li th:each="fileName : ${fileList}" th:text="${fileName}"></li>
+    </ul>
+</body>
+</html>
