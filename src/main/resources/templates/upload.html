@@ -23,11 +23,25 @@
 <br>
 <h3><u>NodeJS Application</u></h3>
 <br>
-
+<pre th:each="line : ${highlightedLines_NODEJS}" th:classappend="${line.contains('node') ? 'highlight' : ''}">
+    <span th:text="${line}" ></span>    
+</pre>
 
 <hr>
+<h1>Deployment Blue Green Strategy</h1>
+<br>
 
-<h1>Elastic BeanStalk & Version Control</h1>
+
+<h3>Frontend Deployment - Apache Web Service</h3>
+<pre th:text="${apacheStatus}"></pre>
+<br>
+
+<h3>Frontend Deployment - Nginx Web Service</h3>
+<pre th:text="${nginxStatus}"></pre>
+<br>
+
+<hr>
+<h1>Backend - Elastic BeanStalk & Version Control</h1>
 <p>Fast Deloyment</p>
 <form th:action="@{/upload}" method="post" enctype="multipart/form-data">
     <input type="file" name="file" />

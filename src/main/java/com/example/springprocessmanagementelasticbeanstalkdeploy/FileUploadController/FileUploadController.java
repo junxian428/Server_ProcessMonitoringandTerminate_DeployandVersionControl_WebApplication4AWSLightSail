@@ -4,6 +4,7 @@ package com.example.springprocessmanagementelasticbeanstalkdeploy.FileUploadCont
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,10 +27,13 @@ public class FileUploadController {
                 // Retrieve and display the list of files in the current directory
         List<String> fileList = listFilesInCurrentDirectory();
         List<String> highlightedLines = new ArrayList<>();
+        List<String> highlightedLines_NODEJS = new ArrayList<>();
 
         model.addAttribute("fileList", fileList);
 
-               ProcessBuilder processBuilder = new ProcessBuilder("ps", "aux");
+
+        // Get process
+        ProcessBuilder processBuilder = new ProcessBuilder("ps", "aux");
         StringBuilder processOutput = new StringBuilder();
 
         try {
@@ -40,7 +44,10 @@ public class FileUploadController {
             while ((line = reader.readLine()) != null) {
                 if (line.contains("java -jar")) {
                     highlightedLines.add(line);
-                }                
+                } 
+                if (line.contains("node")) {
+                     highlightedLines_NODEJS.add(line);
+                }            
                 processOutput.append(line).append("\n");
             }
 
@@ -50,13 +57,74 @@ public class FileUploadController {
             e.printStackTrace();
             processOutput.append("Error occurred: ").append(e.getMessage());
         }
+        // Apache Status 
 
+        /*
+         * 
+         * 
+         * 
+         */
+        ProcessBuilder processBuilder_2 = new ProcessBuilder("service", "apache2", "status");
+        String apache2_status = "";
+
+         try {
+            Process process_2 = processBuilder_2.start();
+            int exitCode = process_2.waitFor();
+
+            if (exitCode == 0) {
+                apache2_status = readOutput(process_2.getInputStream());
+            } else {
+                apache2_status = "Apache2 service is not running or encountered an error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+        /*
+         * 
+         * 
+         * 
+         */
+
+        ProcessBuilder processBuilder_3 = new ProcessBuilder("systemctl", "status", "nginx");
+        String nginx_status = "";
+
+         try {
+            Process process_3 = processBuilder_3.start();
+            int exitCode = process_3.waitFor();
+
+            if (exitCode == 0) {
+                nginx_status = readOutput(process_3.getInputStream());
+            } else {
+                nginx_status = "Nginx service is not running or encountered an error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+
+        //
         model.addAttribute("processInfo", processOutput.toString());
         model.addAttribute("highlightedLines", highlightedLines);
+        model.addAttribute("highlightedLines_NODEJS",    highlightedLines_NODEJS);
+        model.addAttribute("apacheStatus",    apache2_status);
+        model.addAttribute("nginxStatus",    nginx_status);
+
 
 
 
         return "upload";
+    }
+
+       private String readOutput(InputStream inputStream) throws IOException {
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+        }
+        return output.toString();
     }
 
     @PostMapping("/upload")
