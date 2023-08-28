@@ -27,27 +27,44 @@
     <span th:text="${line}" ></span>    
 </pre>
 
+<br>
+
+<h1>Terminate the application / process</h1>
+
+<form th:action="@{/process-input}" method="post">
+    <input type="text" name="userInput" th:attr="style='width: 500px; height: 50px;'" />
+    <button type="submit" th:attr="style=' height: 50px;'" >Kill The Process</button>
+</form>
+
 <hr>
 <h1>Deployment Blue Green Strategy</h1>
 <br>
 
 
-<h3>Frontend Deployment - Apache Web Service</h3>
+<h3>Frontend Deployment - Apache Web Service (Blue Environment)</h3>
 <pre th:text="${apacheStatus}"></pre>
 <br>
 
-<h3>Frontend Deployment - Nginx Web Service</h3>
+<h3>Frontend Deployment - Nginx Web Service  (Green Environment)</h3>
 <pre th:text="${nginxStatus}"></pre>
 <br>
 
-<hr>
-<h1>Backend - Elastic BeanStalk & Version Control</h1>
+<h3>Backend - Elastic BeanStalk & Version Control  (Blue Environment)</h3>
 <p>Fast Deloyment</p>
 <form th:action="@{/upload}" method="post" enctype="multipart/form-data">
     <input type="file" name="file" />
     <button type="submit">Upload</button>
 </form>
 <p th:text="${message}"></p>
+
+<br>
+
+<h3>Backend - Elastic BeanStalk & Version Control  (Green Environment)</h3>
+<p>Fast Deloyment</p>
+
+<p th:text="${message}"></p>
+
+<br>
 
 <hr>
 

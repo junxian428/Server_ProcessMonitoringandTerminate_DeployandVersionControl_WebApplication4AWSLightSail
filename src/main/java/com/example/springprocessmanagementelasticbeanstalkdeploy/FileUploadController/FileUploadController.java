@@ -127,6 +127,44 @@ public class FileUploadController {
         return output.toString();
     }
 
+
+    @GetMapping("/input")
+    public String showInputForm() {
+        return "redirect:/";
+    }
+
+
+    @PostMapping("/process-input")
+    public String processInput(@RequestParam String userInput, Model model) {
+        // Process the input, perform actions, stop tasks, etc.
+        // Gracefully handle any necessary actions instead of abruptly killing the process.
+        
+        // Return a view name or redirect to an appropriate page
+        //System.out.println(userInput);
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("kill", userInput);
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+            
+            if (exitCode == 0) {
+                // Process successfully terminated
+                return "redirect:/";
+            } else {
+                // Handle error scenario
+                   // Handle error scenario
+                model.addAttribute("error", "Error terminating process.");
+                return "error-page";
+            }
+        } catch (IOException | InterruptedException e) {
+            // Handle exception
+            model.addAttribute("error", "An error occurred: " + e.getMessage());
+            return "error-page";
+        }
+    }
+
+
+
+
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
         if (!file.isEmpty()) {
