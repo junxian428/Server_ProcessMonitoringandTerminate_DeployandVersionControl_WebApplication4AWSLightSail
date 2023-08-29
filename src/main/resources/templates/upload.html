@@ -103,7 +103,7 @@ sudo java -jar springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar
             Blue Environment
         </th>
         <th style="border: 1px solid black;">
-            <pre th:text="${blue_Environment}"></pre>
+            <pre th:text="${blueEnvironment}"></pre>
         </th>
     </tr>
     <tr style="border: 1px solid black;">
@@ -112,7 +112,7 @@ sudo java -jar springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar
             Green Environment
         </th>
         <th style="border: 1px solid black;">
-            <pre th:text="${green_Environment}"></pre>
+            <pre th:text="${greenEnvironment}"></pre>
         </th>
     </tr>
 </table>
@@ -147,11 +147,9 @@ sudo java -jar springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar
     <br>
     <ul>
         
-        <li th:each="fileName : ${fileList}">
+        <li th:each="fileName : ${fileApacheList}">
             <span th:text="${fileName}"></span>
-            <th:block th:unless="${fileName == 'springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar'}">
-                <a th:href="@{/delete/{fileName}(fileName=${fileName})}" onclick="return confirm('Are you sure you want to delete this file?')">Delete</a>
-            </th:block>        
+            <a th:href="@{/deleteFrontend/{fileName}(fileName=${fileName})}" onclick="return confirm('Are you sure you want to delete this file?')">Delete</a>
         </li>
     </ul>
 
@@ -167,7 +165,11 @@ sudo java -jar springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar
         <li th:each="fileName : ${fileList}">
             <span th:text="${fileName}"></span>
             <th:block th:unless="${fileName == 'springprocessmanagementelasticbeanstalkdeploy-0.0.1-SNAPSHOT.jar'}">
-                <a th:href="@{/delete/{fileName}(fileName=${fileName})}" onclick="return confirm('Are you sure you want to delete this file?')">Delete</a>
+                <th:block th:unless="${fileName == 'Blue.txt'}">
+                    <th:block th:unless="${fileName == 'Green.txt'}">
+                        <a th:href="@{/delete/{fileName}(fileName=${fileName})}" onclick="return confirm('Are you sure you want to delete this file?')">Delete</a>
+                    </th:block>        
+                    </th:block>        
             </th:block>        
         </li>
     </ul>

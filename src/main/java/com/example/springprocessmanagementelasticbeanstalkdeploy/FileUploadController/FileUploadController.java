@@ -30,6 +30,8 @@ public class FileUploadController {
     @GetMapping("/")
     public String showUploadForm( Model model) {
                 // Retrieve and display the list of files in the current directory
+        List<String> fileApache2List = listApache2File();
+
         List<String> fileList = listFilesInCurrentDirectory();
         List<String> highlightedLines = new ArrayList<>();
         List<String> highlightedLines_NODEJS = new ArrayList<>();
@@ -38,10 +40,62 @@ public class FileUploadController {
         //
       
         //
+        // 
+        /*
+         * 
+         * 
+         * 
+        */
+
+        String filePath = "Green.txt";
+        String filePath_2 = "Blue.txt";
+        String greenEnvironment= "";
+        String blueEnvironment= "";
+          // Get the current working directory
+        String currentWorkingDir = System.getProperty("user.dir");
+
+                // Create a Path for the target file using the current working directory
+         Path targetPath = Paths.get(currentWorkingDir + "/" + filePath);
+         Path targetPath_2 = Paths.get(currentWorkingDir + "/" + filePath_2);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath.toString()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+
+            }
+            greenEnvironment = line;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
+        //
 
 
-  
+        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath_2.toString()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+
+            }
+            blueEnvironment = line;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
+
+        //
+
+        model.addAttribute("greenEnvironment", greenEnvironment);
+        model.addAttribute("blueEnvironment", blueEnvironment);
+        //
+
+      
+
         model.addAttribute("fileList", fileList);
+        model.addAttribute("fileApacheList",  fileApache2List);
 
 
         // Get process
@@ -222,6 +276,172 @@ public class FileUploadController {
     }
 
 
+
+    @PostMapping("/uploadFrontend")
+    public String uploadFrontendFile(@RequestParam("file") MultipartFile file, Model model) {
+        if (!file.isEmpty()) {
+            try {
+                // Get the current working directory
+                //String currentWorkingDir = System.getProperty("user.dir");
+                
+                // Create a Path for the target file using the current working directory
+                Path targetPath = Paths.get("/var/www/html/" + file.getOriginalFilename());
+                
+                // Save the file to the current working directory
+                Files.write(targetPath, file.getBytes());
+                
+                model.addAttribute("message", "File uploaded successfully!");
+            } catch (IOException e) {
+                e.printStackTrace();
+                model.addAttribute("message", "Error uploading the file.");
+            }
+        } else {
+            model.addAttribute("message", "Please select a file to upload.");
+        }
+        
+        // Retrieve and display the list of files in the current directory
+        List<String> fileList = listFilesInCurrentDirectory();
+        model.addAttribute("fileList", fileList);
+            List<String> fileApache2List = listApache2File();
+        model.addAttribute("fileApacheList",  fileApache2List);
+
+
+        List<String> highlightedLines = new ArrayList<>();
+        List<String> highlightedLines_NODEJS = new ArrayList<>();
+
+        // Get process
+        ProcessBuilder processBuilder = new ProcessBuilder("ps", "aux");
+        StringBuilder processOutput = new StringBuilder();
+
+        try {
+            Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("java -jar")) {
+                    highlightedLines.add(line);
+                } 
+                if (line.contains("node")) {
+                     highlightedLines_NODEJS.add(line);
+                }            
+                processOutput.append(line).append("\n");
+            }
+
+            int exitCode = process.waitFor();
+            processOutput.append("\nProcess exited with code: ").append(exitCode);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            processOutput.append("Error occurred: ").append(e.getMessage());
+        }
+        // Apache Status 
+
+        /*
+         * 
+         * 
+         * 
+         */
+        ProcessBuilder processBuilder_2 = new ProcessBuilder("service", "apache2", "status");
+        String apache2_status = "";
+
+         try {
+            Process process_2 = processBuilder_2.start();
+            int exitCode = process_2.waitFor();
+
+            if (exitCode == 0) {
+                apache2_status = readOutput(process_2.getInputStream());
+            } else {
+                apache2_status = "Apache2 service is not running or encountered an error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+        /*
+         * 
+         * 
+         * 
+         */
+
+        ProcessBuilder processBuilder_3 = new ProcessBuilder("systemctl", "status", "nginx");
+        String nginx_status = "";
+
+         try {
+            Process process_3 = processBuilder_3.start();
+            int exitCode = process_3.waitFor();
+
+            if (exitCode == 0) {
+                nginx_status = readOutput(process_3.getInputStream());
+            } else {
+                nginx_status = "Nginx service is not running or encountered an error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+
+        //
+        /*
+         * 
+         * 
+         * 
+         */
+
+
+        ProcessBuilder processBuilder_4 = new ProcessBuilder("sudo", "nmap", "localhost");
+        String port_status = "";
+
+         try {
+            Process process_4 = processBuilder_4.start();
+            int exitCode = process_4.waitFor();
+
+            if (exitCode == 0) {
+                port_status = readOutput(process_4.getInputStream());
+            } else {
+                port_status = "Port scan error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving Apache2 status.";
+        }
+  //sudo service mysql status
+
+        ProcessBuilder processBuilder_5 = new ProcessBuilder("sudo", "service", "mysql", "status");
+        String database_status = "";
+
+         try {
+            Process process_5 = processBuilder_5.start();
+            int exitCode = process_5.waitFor();
+
+            if (exitCode == 0) {
+                database_status = readOutput(process_5.getInputStream());
+            } else {
+                  database_status = "Database status error.";
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "An error occurred while retrieving database status.";
+        }
+        //
+
+     
+
+
+        //
+         //
+        model.addAttribute("processInfo", processOutput.toString());
+        model.addAttribute("highlightedLines", highlightedLines);
+        model.addAttribute("highlightedLines_NODEJS",    highlightedLines_NODEJS);
+        model.addAttribute("apacheStatus",    apache2_status);
+        model.addAttribute("nginxStatus",    nginx_status);
+        model.addAttribute("portStatus",    port_status);
+        model.addAttribute("databaseStatus",    database_status);
+
+
+
+
+        return "upload";
+    }
 
 
     @PostMapping("/upload")
@@ -405,6 +625,48 @@ public class FileUploadController {
         return fileNames;
     }
 
+        // Method to list files in the current directory
+    private List<String> listApache2File() {
+        File directory = new File("/var/www/html/");
+
+        List<String> fileNames = new ArrayList<>();
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    fileNames.add(file.getName());
+                }
+            }
+        }
+        return fileNames;
+    }
+
+
+       @GetMapping("/deleteFrontend/{fileName}")
+    public String deleteFrontendFile(@PathVariable String fileName, Model model) {
+        //String currentWorkingDir = System.getProperty("user.dir");
+        String filePath = "/var/www/html/" +  fileName;
+        System.out.println(filePath);
+        File file = new File(filePath);
+        /*
+         * 
+         */
+        if (file.exists()) {
+            try{
+                file.delete();
+
+            }catch(Exception e){
+                System.out.println("Error : " + e);
+            }
+            //fileList.remove(fileName);
+        }
+        return "redirect:/";
+    }
+
+
+
+
+
         @GetMapping("/delete/{fileName}")
     public String deleteFile(@PathVariable String fileName, Model model) {
         String currentWorkingDir = System.getProperty("user.dir");
@@ -444,9 +706,35 @@ public class FileUploadController {
                 if (Files.exists(targetPath)) {
                     Files.delete(targetPath);
                 }
+
+
+               
                 
                 // Save the file to the current working directory
                 Files.write(targetPath, file.getBytes());
+
+
+
+                 try {
+                    // Create a ProcessBuilder with the Java command to run the JAR file
+                    ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", file.getOriginalFilename());
+
+                    // Redirect the output and error streams to separate files if needed
+                    processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+                    processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+                    // Start the process
+                    Process process = processBuilder.start();
+
+                    // You can now continue with the rest of your Java code
+                    // The JAR process will run in the background
+
+                    // Optionally, you can wait for the process to complete
+                    // int exitCode = process.waitFor();
+                    // System.out.println("Process exited with code: " + exitCode);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                             // Write Green or Blue Environment
                     // Specify the file path
                     String filePath = "Green.txt";
@@ -597,7 +885,8 @@ public class FileUploadController {
 
 
 
-
+    List<String> fileApache2List = listApache2File();
+        model.addAttribute("fileApacheList",  fileApache2List);
 
          //
         model.addAttribute("processInfo", processOutput.toString());
@@ -636,6 +925,30 @@ public class FileUploadController {
                 // Save the file to the current working directory
                 Files.write(targetPath, file.getBytes());
                             // Write Green or Blue Environment
+
+
+                                  try {
+                    // Create a ProcessBuilder with the Java command to run the JAR file
+                    ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", file.getOriginalFilename());
+
+                    // Redirect the output and error streams to separate files if needed
+                    processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+                    processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+                    // Start the process
+                    Process process = processBuilder.start();
+
+                    // You can now continue with the rest of your Java code
+                    // The JAR process will run in the background
+
+                    // Optionally, you can wait for the process to complete
+                    // int exitCode = process.waitFor();
+                    // System.out.println("Process exited with code: " + exitCode);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
                     // Specify the file path
                     String filePath = "Blue.txt";
 
@@ -784,7 +1097,8 @@ public class FileUploadController {
         //
          // Specify the file path
 
-
+    List<String> fileApache2List = listApache2File();
+        model.addAttribute("fileApacheList",  fileApache2List);
          //
         model.addAttribute("processInfo", processOutput.toString());
         model.addAttribute("highlightedLines", highlightedLines);
