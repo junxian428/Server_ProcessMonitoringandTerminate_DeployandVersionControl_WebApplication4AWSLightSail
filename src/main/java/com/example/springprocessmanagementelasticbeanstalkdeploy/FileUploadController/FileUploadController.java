@@ -36,50 +36,11 @@ public class FileUploadController {
         //sudo service mysql status
         // Read Green and Blue envionrment
         //
-         // Specify the file path
-        String filePath = "Green.txt";
-        String filePath_2 = "Blue.txt";
-        String greenEnvironment= "";
-        String blueEnvironment= "";
-          // Get the current working directory
-        String currentWorkingDir = System.getProperty("user.dir");
-                
-                // Create a Path for the target file using the current working directory
-         Path targetPath = Paths.get(currentWorkingDir + "/" + filePath);
-         Path targetPath_2 = Paths.get(currentWorkingDir + "/" + filePath_2);
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath.toString()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                
-            }
-            greenEnvironment = line;
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("An error occurred while reading the file.");
-        }
+      
         //
 
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath_2.toString()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                
-            }
-            blueEnvironment = line;
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("An error occurred while reading the file.");
-        }
-
-        //
-
-        model.addAttribute("greenEnvironment", greenEnvironment);
-        model.addAttribute("blueEnvironment", blueEnvironment);
+  
         model.addAttribute("fileList", fileList);
 
 
@@ -406,53 +367,7 @@ public class FileUploadController {
         }
         //
 
-        //sudo service mysql status
-        // Read Green and Blue envionrment
-        //
-         // Specify the file path
-        String filePath = "Green.txt";
-        String filePath_2 = "Blue.txt";
-        String greenEnvironment= "";
-        String blueEnvironment= "";
-          // Get the current working directory
-        String currentWorkingDir = System.getProperty("user.dir");
-                
-                // Create a Path for the target file using the current working directory
-         Path targetPath = Paths.get(currentWorkingDir + "/" + filePath);
-         Path targetPath_2 = Paths.get(currentWorkingDir + "/" + filePath_2);
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath.toString()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                
-            }
-            greenEnvironment = line;
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("An error occurred while reading the file.");
-        }
-        //
-
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath_2.toString()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                
-            }
-            blueEnvironment = line;
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("An error occurred while reading the file.");
-        }
-
-        //
-
-        model.addAttribute("greenEnvironment", greenEnvironment);
-        model.addAttribute("blueEnvironment", blueEnvironment);
+     
 
 
         //
@@ -679,49 +594,8 @@ public class FileUploadController {
         // Read Green and Blue envionrment
         //
          // Specify the file path
-        String filePath = "Green.txt";
-        String filePath_2 = "Blue.txt";
-        String greenEnvironment= "";
-        String blueEnvironment= "";
-          // Get the current working directory
-        String currentWorkingDir = System.getProperty("user.dir");
-                
-                // Create a Path for the target file using the current working directory
-         Path targetPath = Paths.get(currentWorkingDir + "/" + filePath);
-         Path targetPath_2 = Paths.get(currentWorkingDir + "/" + filePath_2);
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath.toString()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                
-            }
-            greenEnvironment = line;
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("An error occurred while reading the file.");
-        }
-        //
 
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath_2.toString()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                
-            }
-            blueEnvironment = line;
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("An error occurred while reading the file.");
-        }
-
-        //
-
-        model.addAttribute("green_Environment", greenEnvironment);
-        model.addAttribute("blue_Environment", blueEnvironment);
 
 
 
@@ -909,49 +783,6 @@ public class FileUploadController {
         // Read Green and Blue envionrment
         //
          // Specify the file path
-        String filePath = "Green.txt";
-        String filePath_2 = "Blue.txt";
-        String greenEnvironment= "";
-        String blueEnvironment= "";
-          // Get the current working directory
-        String currentWorkingDir = System.getProperty("user.dir");
-                
-                // Create a Path for the target file using the current working directory
-         Path targetPath = Paths.get(currentWorkingDir + "/" + filePath);
-         Path targetPath_2 = Paths.get(currentWorkingDir + "/" + filePath_2);
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath.toString()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                
-            }
-            greenEnvironment = line;
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("An error occurred while reading the file.");
-        }
-        //
-
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(targetPath_2.toString()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                
-            }
-            blueEnvironment = line;
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("An error occurred while reading the file.");
-        }
-
-        //
-
-        model.addAttribute("green_Environment", greenEnvironment);
-        model.addAttribute("blue_Environment", blueEnvironment);
 
 
          //
