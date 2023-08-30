@@ -1,22 +1,175 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>>Elastic BeanStalk & Version Control</title>
-    <style>
-            .highlight {
-            color: green;
-            font-weight: bold;
-        }
-    </style>
+    <title>Database Explorer</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    
-<h1><u>MySQL Database Viewer</u></h1><p>written by Weng Yin</p> 
-
-<a href="/">Fast Deploy Application</a>
-<a href="/database">Database</a>
-<a href="/systemdesign">System Design</a>
-
-
+    <h2>Database List</h2>
+    <ul>
+        <li th:each="dbName : ${databaseNames}">
+            <a href="#" class="database-link" th:data-database-name="${dbName}" th:text="${dbName}"></a>
+        </li>
+    </ul>
+    <div id="table-list"></div>
+    <div id="row-table"></div>
 </body>
+<script>
+            var selectedDatabaseName = ""; // Store the selected databaseName
+            var selectedTableName = ""; // Store the selected databaseName
+
+
+    $(document).ready(function() {
+    $(".database-link").on("click", function() {
+        var databaseName = $(this).data("database-name");
+        selectedDatabaseName = $(this).data("database-name"); // Store the clicked databaseName
+
+        loadTables(databaseName);
+    });
+
+    $(document).on("click", ".table-link", function() {
+        var databaseName = $(this).data("database-name");
+        var tableName = $(this).data("table-name");
+        selectedTableName = $(this).data("table-name");
+        loadRows(databaseName, tableName);
+    });
+
+    $(document).on("click", ".save-button", function() {
+        var row = $(this).closest("tr");
+        var databaseName = selectedDatabaseName;
+        var tableName = selectedTableName;
+        //var rowId = row.data("row-id");
+        var inputFields = row.find(".edit-input");
+        var row = $(this).closest("tr");
+        var rowId = row.data("row-id"); // Retrieve the rowId data attribute
+
+
+
+        var updatedValues = {};
+
+
+        inputFields.each(function(index) {
+            var columnName = $(this).parent().parent().find("th").eq(index).text();
+            var newValue = $(this).val();
+            updatedValues[columnName] = newValue;
+            $(this).parent().html(newValue);
+        });
+
+        $.post("/edit-row", { databaseName: databaseName, tableName: tableName, rowId: rowId }, function(response) {
+            if (response === "Success") {
+                $(".edit-button").show();
+                $(".delete-button").show();
+                $(".save-button").remove();
+            } else {
+                $(".edit-button").show();
+                $(".delete-button").show();
+                alert("Error updating row");
+                console.log(response);
+            }
+        });
+
+   
+    });
+
+    $(document).on("click", ".edit-button", function() {
+        var row = $(this).closest("tr");
+        var cells = row.find("td");
+        var editButton = row.find(".edit-button");
+        var deleteButton = row.find(".delete-button");
+
+        // Hide edit and delete buttons
+        editButton.hide();
+        deleteButton.hide();
+
+        // Convert cells to input fields for editing
+        cells.each(function() {
+            var cellValue = $(this).text();
+            $(this).html("<input type='text' class='edit-input' value='" + cellValue + "'>");
+        });
+
+        // Append Save button
+        var saveButton = $("<button class='save-button'>Save</button>");
+        row.append(saveButton);
+    });
+
+    $(document).on("click", ".delete-button", function() {
+     
+        if (confirm("Are you sure you want to delete this row?")) {
+            var row = $(this).closest("tr");
+            var databaseName = row.data("database-name");
+            var tableName = row.data("table-name");
+            var rowId = row.data("row-id");
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-CSRF-TOKEN', '${_csrf.token}');
+                    }
+                });
+            // Delete logic using AJAX
+            $.post("/delete-row", { databaseName: databaseName, tableName: tableName, rowId: rowId }, function(response) {
+                if (response === "Success") {
+                    row.remove();
+                } else {
+                    alert("Error deleting row");
+                    console.log(response);
+                }
+            });
+        }
+    });
+});
+
+
+// Rest of the code remains unchanged
+$(document).ready(function() {
+    $(".database-link").on("click", function() {
+        var databaseName = $(this).data("database-name");
+        loadTables(databaseName);
+    });
+
+    $(document).on("click", ".table-link", function() {
+        var databaseName = $(this).data("database-name");
+        var tableName = $(this).data("table-name");
+        loadRows(databaseName, tableName);
+    });
+});
+
+function loadTables(databaseName) {
+    $.get("/tables/" + databaseName, function(data) {
+        var tableList = $("#table-list");
+        tableList.empty();
+        data.forEach(function(tableName) {
+            tableList.append('<li><a href="#" class="table-link" data-database-name="' + databaseName + '" data-table-name="' + tableName + '">' + tableName + '</a></li>');
+        });
+    });
+}
+
+function loadRows(databaseName, tableName) {
+    $.get("/rows/" + databaseName + "/" + tableName, function(data) {
+        var rowTable = $("#row-table");
+        rowTable.empty();
+
+        // Build the table rows and cells based on data
+        var tableHTML = "<table>";
+        tableHTML += "<tr>";
+        for (var key in data[0]) {
+            tableHTML += "<th>" + key + "</th>";
+        }
+        tableHTML += "<th>Actions</th>"; // Add column for buttons
+        tableHTML += "</tr>";
+
+        data.forEach(function(row) {
+            //tableHTML += "<tr>";
+            tableHTML += "<tr data-row-id='" + row.id + "'>"; // Add rowId as a data attribute
+            for (var key in row) {
+                tableHTML += "<td>" + row[key] + "</td>";
+            }
+            tableHTML += "<td><button class='edit-button'>Edit</button> <button class='delete-button'>Delete</button></td>";
+            tableHTML += "</tr>";
+        });
+
+        tableHTML += "</table>";
+        rowTable.html(tableHTML);
+    });
+}
+
+</script>
 </html>
